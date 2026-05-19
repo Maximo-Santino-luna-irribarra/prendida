@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,27 +37,31 @@ fun PrendidaTextField(
             value = value,
             onValueChange = onValueChange,
             label = { Text(label) },
-            placeholder = placeholder?.let { { Text(it, color = TextGreyLight.copy(alpha = 0.5f)) } },
+            placeholder = placeholder?.let { { Text(it, color = Color.Black.copy(alpha = 0.4f)) } },
             isError = isError,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = keyboardOptions,
             leadingIcon = leadingIcon?.let { { Icon(it, contentDescription = null) } },
+            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
             supportingText = {
                 if (isError && errorMessage != null) {
                     Text(errorMessage, color = MaterialTheme.colorScheme.error)
                 } else if (helperText != null) {
-                    Text(helperText, color = TextGreyLight)
+                    Text(helperText, color = TextGreyLight) // Mantenemos el helper en blanco/gris para leer sobre fondo negro
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = TextGreyLight.copy(alpha = 0.3f),
-                cursorColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = Color.Transparent,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
                 focusedLabelColor = MaterialTheme.colorScheme.primary,
-                unfocusedLabelColor = TextGreyLight,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
+                unfocusedLabelColor = Color.Black.copy(alpha = 0.6f),
+                focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                unfocusedLeadingIconColor = Color.Black.copy(alpha = 0.6f)
             )
         )
     }

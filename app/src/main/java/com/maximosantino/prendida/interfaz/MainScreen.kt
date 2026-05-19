@@ -29,6 +29,7 @@ fun MainScreen(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onAddDeviceClick: () -> Unit,
+    onEditDeviceClick: (PcDeviceEntity) -> Unit,
     onHelpClick: () -> Unit,
     onPowerClick: (PcDeviceEntity) -> Unit,
     onDeleteClick: (PcDeviceEntity) -> Unit
@@ -58,17 +59,17 @@ fun MainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                placeholder = { Text("Buscar por nombre...", color = TextGreyLight) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = TextGreyLight) },
+                placeholder = { Text("Buscar por nombre...", color = Color.Black.copy(alpha = 0.4f)) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black.copy(alpha = 0.6f)) },
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
-                    focusedContainerColor = Color.White.copy(alpha = 0.05f),
-                    unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
@@ -88,6 +89,7 @@ fun MainScreen(
                         DeviceCard(
                             device = device,
                             onPowerClick = { onPowerClick(device) },
+                            onEditClick = { onEditDeviceClick(device) },
                             onDeleteClick = { onDeleteClick(device) }
                         )
                     }
@@ -104,6 +106,7 @@ fun MainScreen(
 fun DeviceCard(
     device: PcDeviceEntity,
     onPowerClick: () -> Unit,
+    onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -155,12 +158,21 @@ fun DeviceCard(
                     )
                 }
                 
-                IconButton(onClick = { showDeleteDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Eliminar",
-                        tint = MaterialTheme.colorScheme.error
-                    )
+                Row {
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar",
+                            tint = Color.Black.copy(alpha = 0.6f)
+                        )
+                    }
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Eliminar",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
 

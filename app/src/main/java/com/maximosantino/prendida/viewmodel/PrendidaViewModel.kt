@@ -50,6 +50,27 @@ class PrendidaViewModel(
         }
     }
 
+    fun updateDevice(
+        id: Int,
+        name: String,
+        macAddress: String,
+        broadcastIp: String,
+        deviceIp: String,
+        port: Int
+    ) {
+        viewModelScope.launch {
+            val device = PcDeviceEntity(
+                id = id,
+                name = name.trim(),
+                macAddress = macAddress.trim(),
+                broadcastIp = broadcastIp.trim(),
+                deviceIp = deviceIp.trim(),
+                port = port
+            )
+            pcDeviceDao.updateDevice(device)
+        }
+    }
+
     fun deleteDevice(device: PcDeviceEntity) {
         viewModelScope.launch {
             pcDeviceDao.deleteDevice(device)

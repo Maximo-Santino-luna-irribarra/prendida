@@ -117,7 +117,7 @@ fun HelpScreen(
             title = "7. Si no funciona...",
             icon = Icons.Default.Warning
         ) {
-            BulletPoint("Verificá que la luz del puerto Ethernet de tu PC quede prendida aunque la PC esté apagada.")
+            BulletPoint("Verificá que la luz del puerto Ethernet de tu PC quede prendida aunque la PC esté apagada ojo que puede ser que este andando con la con la luz de puerto apagada esto depende de la mother .")
             ImagePlaceholder(text = "Imagen pendiente: luz del puerto Ethernet")
             BulletPoint("Desactivá el 'Inicio rápido' en Windows.")
             BulletPoint("Asegurate de que no haya un firewall bloqueando el puerto 9.")

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.maximosantino.prendida.data.PcDeviceEntity
 import com.maximosantino.prendida.data.PrendidaDatabase
 import com.maximosantino.prendida.network.NetworkUtils
 import com.maximosantino.prendida.viewmodel.PrendidaViewModel
@@ -29,7 +30,8 @@ import kotlinx.coroutines.withContext
 private enum class PrendidaScreen {
     HOME,
     ADD_DEVICE,
-    HELP
+    HELP,
+    EDIT_DEVICE
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,9 +60,14 @@ fun PrendidaApp() {
     var currentScreen by remember {
         mutableStateOf(PrendidaScreen.HOME)
     }
+    
+    var deviceToEdit by remember { mutableStateOf<PcDeviceEntity?>(null) }
 
     fun navigateTo(screen: PrendidaScreen) {
         currentScreen = screen
+        if (screen != PrendidaScreen.EDIT_DEVICE) {
+            deviceToEdit = null
+        }
         scope.launch {
             drawerState.close()
         }
@@ -153,6 +160,7 @@ fun PrendidaApp() {
                             text = when (currentScreen) {
                                 PrendidaScreen.HOME -> "PRENDIDA"
                                 PrendidaScreen.ADD_DEVICE -> "AGREGAR PC"
+                                PrendidaScreen.EDIT_DEVICE -> "EDITAR EQUIPO"
                                 PrendidaScreen.HELP -> "AYUDA"
                             },
                             fontWeight = FontWeight.Black,
@@ -183,6 +191,10 @@ fun PrendidaApp() {
                         onSearchQueryChange = { viewModel.updateSearchQuery(it) },
                         onAddDeviceClick = {
                             currentScreen = PrendidaScreen.ADD_DEVICE
+                        },
+                        onEditDeviceClick = { device ->
+                            deviceToEdit = device
+                            currentScreen = PrendidaScreen.EDIT_DEVICE
                         },
                         onHelpClick = {
                             currentScreen = PrendidaScreen.HELP
@@ -233,9 +245,10 @@ fun PrendidaApp() {
                     )
                 }
 
-                PrendidaScreen.ADD_DEVICE -> {
+                PrendidaScreen.ADD_DEVICE, PrendidaScreen.EDIT_DEVICE -> {
                     AddDeviceScreen(
                         modifier = Modifier.padding(paddingValues),
+                        deviceToEdit = if (currentScreen == PrendidaScreen.EDIT_DEVICE) deviceToEdit else null,
                         onSaveDevice = { name, macAddress, broadcastIp, deviceIp, port ->
                             viewModel.addDevice(
                                 name = name,
@@ -251,6 +264,25 @@ fun PrendidaApp() {
                                 Toast.LENGTH_SHORT
                             ).show()
 
+                            currentScreen = PrendidaScreen.HOME
+                        },
+                        onUpdateDevice = { id, name, macAddress, broadcastIp, deviceIp, port ->
+                            viewModel.updateDevice(
+                                id = id,
+                                name = name,
+                                macAddress = macAddress,
+                                broadcastIp = broadcastIp,
+                                deviceIp = deviceIp,
+                                port = port
+                            )
+
+                            Toast.makeText(
+                                context,
+                                "PC actualizada correctamente",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            
+                            deviceToEdit = null
                             currentScreen = PrendidaScreen.HOME
                         }
                     )

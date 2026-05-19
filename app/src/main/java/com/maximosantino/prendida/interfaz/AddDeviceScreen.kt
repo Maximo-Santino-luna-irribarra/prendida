@@ -9,20 +9,24 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.maximosantino.prendida.data.PcDeviceEntity
 import com.maximosantino.prendida.ui.theme.TextGreyLight
 
 @Composable
 fun AddDeviceScreen(
     modifier: Modifier = Modifier,
-    onSaveDevice: (String, String, String, String, Int) -> Unit
+    deviceToEdit: PcDeviceEntity? = null,
+    onSaveDevice: (String, String, String, String, Int) -> Unit,
+    onUpdateDevice: (Int, String, String, String, String, Int) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var macAddress by remember { mutableStateOf("") }
-    var deviceIp by remember { mutableStateOf("") }
-    var broadcastIp by remember { mutableStateOf("") }
-    var port by remember { mutableStateOf("9") }
+    var name by remember { mutableStateOf(deviceToEdit?.name ?: "") }
+    var macAddress by remember { mutableStateOf(deviceToEdit?.macAddress ?: "") }
+    var deviceIp by remember { mutableStateOf(deviceToEdit?.deviceIp ?: "") }
+    var broadcastIp by remember { mutableStateOf(deviceToEdit?.broadcastIp ?: "") }
+    var port by remember { mutableStateOf(deviceToEdit?.port?.toString() ?: "9") }
 
     // Estados de error
     var nameError by remember { mutableStateOf<String?>(null) }
@@ -105,8 +109,8 @@ fun AddDeviceScreen(
             .verticalScroll(scrollState)
     ) {
         SectionTitle(
-            title = "Nuevo Equipo",
-            subtitle = "Completá los datos técnicos de tu PC"
+            title = if (deviceToEdit == null) "Nuevo Equipo" else "Editar Equipo",
+            subtitle = if (deviceToEdit == null) "Completá los datos técnicos de tu PC" else "Modificá los datos de '${deviceToEdit.name}'"
         )
 
         PrendidaTextField(
@@ -139,7 +143,7 @@ fun AddDeviceScreen(
             helperText = "Dirección local de la PC en tu red",
             isError = ipError != null,
             errorMessage = ipError,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text), // Permite puntos
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             leadingIcon = Icons.Default.Place
         )
 
@@ -151,7 +155,7 @@ fun AddDeviceScreen(
             helperText = "Usada para enviar el paquete a toda la red",
             isError = broadcastError != null,
             errorMessage = broadcastError,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text), // Permite puntos
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             leadingIcon = Icons.Default.Share
         )
 
@@ -170,19 +174,30 @@ fun AddDeviceScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         PrimaryButton(
-            text = "GUARDAR EQUIPO",
+            text = if (deviceToEdit == null) "GUARDAR EQUIPO" else "ACTUALIZAR DATOS",
             onClick = {
                 if (validateForm()) {
-                    onSaveDevice(
-                        name,
-                        macAddress.uppercase().trim(),
-                        broadcastIp.trim(),
-                        deviceIp.trim(),
-                        port.toInt()
-                    )
+                    if (deviceToEdit == null) {
+                        onSaveDevice(
+                            name,
+                            macAddress.uppercase().trim(),
+                            broadcastIp.trim(),
+                            deviceIp.trim(),
+                            port.toInt()
+                        )
+                    } else {
+                        onUpdateDevice(
+                            deviceToEdit.id,
+                            name,
+                            macAddress.uppercase().trim(),
+                            broadcastIp.trim(),
+                            deviceIp.trim(),
+                            port.toInt()
+                        )
+                    }
                 }
             },
-            icon = Icons.Default.Check
+            icon = if (deviceToEdit == null) Icons.Default.Check else Icons.Default.Refresh
         )
         
         Spacer(modifier = Modifier.height(32.dp))
