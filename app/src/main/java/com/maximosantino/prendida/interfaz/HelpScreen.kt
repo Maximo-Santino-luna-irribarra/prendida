@@ -1,5 +1,6 @@
 package com.maximosantino.prendida.interfaz
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,14 +11,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.maximosantino.prendida.R
 import com.maximosantino.prendida.ui.theme.SurfaceWhite
-import com.maximosantino.prendida.ui.theme.TextGreyLight
 import com.maximosantino.prendida.ui.theme.TextGreyDark
 import com.maximosantino.prendida.ui.theme.TextBlack
-import androidx.compose.ui.graphics.Color
+
 @Composable
 fun HelpScreen(
     modifier: Modifier = Modifier
@@ -32,7 +37,7 @@ fun HelpScreen(
     ) {
         SectionTitle(
             title = "Guía de Ayuda",
-            subtitle = "Todo lo que necesitas saber para empezar"
+            subtitle = "Seguí estos pasos para configurar tu PC"
         )
 
         HelpSection(
@@ -40,90 +45,147 @@ fun HelpScreen(
             icon = Icons.Default.Info
         ) {
             Text(
-                "Prendida permite encender tu computadora de escritorio desde el celular usando una tecnología llamada 'Wake on LAN'.",
+                "Prendida te permite encender tu computadora desde el celular. Para que funcione, tu PC debe estar conectada por cable y configurada para 'escuchar' el aviso de encendido  mediante la tecnologia wake on lan.",
                 color = TextGreyDark
             )
         }
 
-        HelpSection(
-            title = "2. Requisitos Previos",
-            icon = Icons.Default.List
-        ) {
-            BulletPoint("Tu PC debe estar conectada por CABLE de red (Ethernet).")
-            BulletPoint("Tu celular debe estar en la misma red Wi-Fi que la PC.")
-            BulletPoint("La PC debe tener habilitado Wake on LAN en la BIOS y Windows.")
-        }
+        HelpStep(
+            stepNumber = 1,
+            title = "Conectá tu PC por cable",
+            description = "Asegurate de que tu computadora esté conectada al router con un cable de red (Ethernet). El Wi-Fi en la PC no suele funcionar para encenderla de forma remota. ",
+            imageResList = listOf(R.drawable.paso1)
+        )
+
+        HelpStep(
+            stepNumber = 2,
+            title = "Buscá los datos de tu red",
+            description = "En tu PC, buscá 'Símbolo del sistema', escribí 'ipconfig /all' y presioná Enter. Anotá la 'Dirección física' (MAC) y la 'Dirección IPv4'.",
+            imageResList = listOf(
+                R.drawable.paso2,
+                R.drawable.paso3
+            )
+
+
+        )
+
+        HelpStep(
+            stepNumber = 3,
+            title = "Configurá la tarjeta de red",
+            description = "Entrá al Administrador de Dispositivos en Windows, buscá tu placa de red y en 'Propiedades' -> 'Opciones Avanzadas', activá todo lo que diga 'Wake on Magic Packet'.",
+            imageResList = listOf(
+                R.drawable.paso4,
+                R.drawable.paso5
+            )
+        )
+
+        HelpStep(
+            stepNumber = 4,
+            title = "Activá el encendido en la BIOS",
+            description = "Reiniciá tu PC y entrá a la BIOS (presionando F2 o Supr). Buscá en 'Power Management' una opción llamada 'Wake on LAN' o 'Power On By PCI-E' y ponela en 'Enabled'.",
+            imageResList = listOf(R.drawable.paso7)
+        )
+
+        HelpStep(
+            stepNumber = 5,
+            title = "Desactivá el inicio rápido",
+            description = "En Windows, ve a opciones de Energía y desactivá el 'Inicio rápido'. Esto permite que la placa de red se quede 'esperando' el aviso cuando apagues la PC.",
+            imageResList = listOf(
+                R.drawable.paso8,
+                R.drawable.paso105,
+                R.drawable.paso12
+
+            )
+        )
+
+        HelpStep(
+            stepNumber = 6,
+            title = "¡Listo para probar!",
+            description = "Agregá tu PC en la aplicación usando los datos que anotaste. Asegurate de que tu celular esté conectado al mismo Wi-Fi que la PC.",
+            imageResList = listOf(R.drawable.paso1)
+        )
 
         HelpSection(
-            title = "3. Cómo encontrar la MAC e IP",
-            icon = Icons.Default.Search
+            title = "¿Necesitás más ayuda?",
+            icon = Icons.Default.QuestionMark
         ) {
-            Text(
-                "En tu PC, abrí el 'Símbolo del sistema' (buscá 'cmd') y escribí:",
-                color = TextGreyDark
-            )
-            Surface(
-                color = Color.Black.copy(alpha = 0.05f),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.padding(vertical = 8.dp)
-            ) {
-                Text(
-                    "ipconfig /all",
-                    modifier = Modifier.padding(12.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            }
-            Text(
-                "Buscá el apartado 'Adaptador de Ethernet'.\n- Dirección física: es la MAC.\n- Dirección IPv4: es la IP.",
-                color = TextGreyDark
-            )
-            ImagePlaceholder(text = "Imagen pendiente: ejemplo de ipconfig /all")
-        }
-
-        HelpSection(
-            title = "4. Dirección de Broadcast",
-            icon = Icons.Default.Share
-        ) {
-            Text(
-                "Normalmente es tu dirección IP pero terminada en .255. Por ejemplo, si tu IP es 192.168.1.54, el broadcast suele ser 192.168.1.255.",
-                color = TextGreyDark
-            )
-        }
-
-        HelpSection(
-            title = "5. Configuración en Windows",
-            icon = Icons.Default.Settings
-        ) {
-            Text(
-                "Debes ir al Administrador de Dispositivos, buscar tu tarjeta de red, entrar en Propiedades -> Opciones Avanzadas y activar 'Wake on Magic Packet'.",
-                color = TextGreyDark
-            )
-            ImagePlaceholder(text = "Imagen pendiente: configuración Wake on LAN en Windows")
-        }
-
-        HelpSection(
-            title = "6. Configuración en BIOS",
-            icon = Icons.Default.Build
-        ) {
-            Text(
-                "Al prender la PC (antes de Windows), entra a la BIOS (tecla F2, F12 o Supr) y busca opciones como 'Wake on LAN', 'Power On By PCI-E' o 'Remote Wake Up'.",
-                color = TextGreyDark
-            )
-            ImagePlaceholder(text = "Imagen pendiente: configuración BIOS")
-        }
-
-        HelpSection(
-            title = "7. Si no funciona...",
-            icon = Icons.Default.Warning
-        ) {
-            BulletPoint("Verificá que la luz del puerto Ethernet de tu PC quede prendida aunque la PC esté apagada ojo que puede ser que este andando con la con la luz de puerto apagada esto depende de la mother .")
-            ImagePlaceholder(text = "Imagen pendiente: luz del puerto Ethernet")
-            BulletPoint("Desactivá el 'Inicio rápido' en Windows.")
-            BulletPoint("Asegurate de que no haya un firewall bloqueando el puerto 9.")
+            BulletPoint("La dirección de Broadcast suele terminar en .255 (ej: 192.168.1.255) o sea es tu ip y 255 en caso de que no funcine preguntale a gpt que el sabe.")
+            BulletPoint("Si la luz del puerto de red de tu PC se apaga por completo al apagar la PC, revisá nuevamente la BIOS.")
+            BulletPoint("Puede ser que tu bios apague la luz del puerto ethernet  es raro pero pasa ")
+            BulletPoint("Si la luz del puerto de red de tu PC se apaga por completo al apagar la PC, revisá nuevamente la BIOS.")
+            BulletPoint("Si la luz del puerto de red de tu PC se apaga por completo al apagar la PC, revisá nuevamente la BIOS.")
         }
 
         Spacer(modifier = Modifier.height(40.dp))
+    }
+}
+
+@Composable
+fun HelpStep(
+    stepNumber: Int,
+    title: String,
+    description: String,
+    imageResList: List<Int>
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.size(28.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stepNumber.toString(),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = TextBlack
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = description,
+                color = TextGreyDark,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            imageResList.forEachIndexed { index, imageRes ->
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = "Imagen ${index + 1} del paso $stepNumber",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 250.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Fit
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
     }
 }
 

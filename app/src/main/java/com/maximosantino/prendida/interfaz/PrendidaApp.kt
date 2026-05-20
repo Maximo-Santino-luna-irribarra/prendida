@@ -1,6 +1,5 @@
 package com.maximosantino.prendida.interfaz
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.core.view.WindowCompat
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -40,6 +41,16 @@ fun PrendidaApp() {
     val context = LocalContext.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Cambiar color de iconos de la barra de estado según si el menú está abierto
+    val view = LocalView.current
+    val isDrawerOpen = drawerState.isOpen || drawerState.isAnimationRunning
+    
+    SideEffect {
+        val window = (view.context as android.app.Activity).window
+        androidx.core.view.WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isDrawerOpen
+    }
 
     val database = remember {
         PrendidaDatabase.getDatabase(context)
@@ -56,6 +67,16 @@ fun PrendidaApp() {
 
     val devices by viewModel.filteredDevices.collectAsState(initial = emptyList())
     val searchQuery by viewModel.searchQuery.collectAsState(initial = "")
+    val deviceStatuses by viewModel.deviceStatuses.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvents.collect { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
 
     var currentScreen by remember {
         mutableStateOf(PrendidaScreen.HOME)
@@ -73,6 +94,15 @@ fun PrendidaApp() {
         }
     }
 
+    fun showMessage(message: String) {
+        scope.launch {
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -83,6 +113,7 @@ fun PrendidaApp() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .statusBarsPadding()
                         .padding(24.dp)
                         .background(
                             MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
@@ -177,9 +208,33 @@ fun PrendidaApp() {
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
+            },
+            floatingActionButton = {
+                if (currentScreen == PrendidaScreen.HOME || currentScreen == PrendidaScreen.HELP) {
+                    FloatingActionButton(
+                        onClick = { currentScreen = PrendidaScreen.ADD_DEVICE },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Agregar PC")
+                    }
+                }
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState) { data ->
+                    Snackbar(
+                        containerColor = Color(0xFF333333),
+                        contentColor = Color.White,
+                        shape = RoundedCornerShape(12.dp),
+                        snackbarData = data
+                    )
+                }
             }
         ) { paddingValues ->
             when (currentScreen) {
@@ -187,6 +242,7 @@ fun PrendidaApp() {
                     MainScreen(
                         modifier = Modifier.padding(paddingValues),
                         devices = devices,
+                        deviceStatuses = deviceStatuses,
                         searchQuery = searchQuery,
                         onSearchQueryChange = { viewModel.updateSearchQuery(it) },
                         onAddDeviceClick = {
@@ -199,13 +255,9 @@ fun PrendidaApp() {
                         onHelpClick = {
                             currentScreen = PrendidaScreen.HELP
                         },
-                        onPowerClick = { device ->
+                        onPowerClick = { device, _ ->
                             if (!NetworkUtils.isConnectedToWifi(context)) {
-                                Toast.makeText(
-                                    context,
-                                    "Tenés que estar conectado a una red Wi-Fi para usar Wake on LAN.",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                showMessage("Tenés que estar conectado a una red Wi-Fi para usar Wake on LAN.")
                                 return@MainScreen
                             }
 
@@ -220,27 +272,24 @@ fun PrendidaApp() {
                                 }
 
                                 if (result.isSuccess) {
-                                    Toast.makeText(
-                                        context,
-                                        "Magic Packet enviado correctamente a ${device.name}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    showMessage("Magic Packet enviado. Comprobando estado...")
+                                    // Iniciamos el ping una vez enviado el paquete
+                                    viewModel.startCheckingStatus(context, device.id, device.deviceIp, device.name)
                                 } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Fallo el envío del Magic Packet a ${device.name}",
-                                        Toast.LENGTH_LONG
-                                    ).show()
+                                    showMessage("Fallo el envío del Magic Packet a ${device.name}")
                                 }
                             }
                         },
+                        onStopPowerClick = { device ->
+                            viewModel.stopCheckingStatus(device.id)
+                            showMessage("Comprobación cancelada para ${device.name}")
+                        },
+                        onOnlyPingClick = { device ->
+                            viewModel.checkDeviceOnce(context, device.id, device.deviceIp, device.name)
+                        },
                         onDeleteClick = { device ->
                             viewModel.deleteDevice(device)
-                            Toast.makeText(
-                                context,
-                                "Equipo '${device.name}' eliminado",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showMessage("Equipo '${device.name}' eliminado")
                         }
                     )
                 }
@@ -258,11 +307,7 @@ fun PrendidaApp() {
                                 port = port
                             )
 
-                            Toast.makeText(
-                                context,
-                                "PC guardada correctamente",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showMessage("PC guardada correctamente")
 
                             currentScreen = PrendidaScreen.HOME
                         },
@@ -276,11 +321,7 @@ fun PrendidaApp() {
                                 port = port
                             )
 
-                            Toast.makeText(
-                                context,
-                                "PC actualizada correctamente",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showMessage("PC actualizada correctamente")
                             
                             deviceToEdit = null
                             currentScreen = PrendidaScreen.HOME

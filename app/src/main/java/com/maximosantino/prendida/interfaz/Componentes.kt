@@ -166,7 +166,7 @@ fun EmptyState(
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
         
         Spacer(Modifier.height(8.dp))
@@ -174,7 +174,7 @@ fun EmptyState(
         Text(
             text = description,
             style = MaterialTheme.typography.bodyLarge,
-            color = TextGreyLight,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             textAlign = TextAlign.Center
         )
         

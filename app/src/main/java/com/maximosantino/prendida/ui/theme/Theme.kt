@@ -10,39 +10,37 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-
-private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryViolet,
-    secondary = SecondaryViolet,
-    tertiary = SuccessGreen,
-    background = BackgroundBlack,
-    surface = SurfaceWhite,
-    onPrimary = BackgroundBlack,
-    onSecondary = BackgroundBlack,
-    onTertiary = BackgroundBlack,
-    onBackground = TextWhite,
-    onSurface = TextBlack,
-    error = ErrorRed,
-    onError = TextWhite
+import androidx.compose.ui.graphics.Color
+private val LightColorScheme = lightColorScheme(
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40,
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
 )
-
-// Forzamos el modo oscuro por el estilo de la app
-private val LightColorScheme = DarkColorScheme
 
 @Composable
 fun PrendidaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Desactivamos dynamic color para mantener la identidad visual de la app
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = DarkColorScheme // Forzamos DarkColorScheme siempre
+    // Usamos el esquema claro por defecto para volver a "como estaba"
+    val colorScheme = LightColorScheme
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            // Hacemos la barra de estado transparente para que se vea el color de lo que hay debajo
+            window.statusBarColor = Color.Transparent.toArgb()
+            
+            // Permitimos que el contenido se dibuje detrás de las barras del sistema
+            WindowCompat.setDecorFitsSystemWindows(window, false)
         }
     }
 
