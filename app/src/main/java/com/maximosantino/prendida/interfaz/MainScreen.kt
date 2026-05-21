@@ -277,41 +277,48 @@ fun DeviceCard(
             val isOnline = status == DeviceStatus.ONLINE
             val isChecking = status == DeviceStatus.CHECKING
 
-            Button(
-                onClick = if (isChecking) onStopPowerClick else onPowerClick,
-                enabled = !isOnline,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isOnline) Color(0xFF4CAF50) else if (isChecking) MaterialTheme.colorScheme.error else Color.Black,
-                    contentColor = Color.White,
-                    disabledContainerColor = if (isOnline) Color(0xFF4CAF50) else Color.Gray,
-                    disabledContentColor = Color.White.copy(alpha = 0.7f)
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (isChecking) {
-                    Icon(Icons.Default.Close, contentDescription = null)
-                } else {
-                    Icon(
-                        if (isOnline) Icons.Default.CheckCircle else Icons.Default.PlayArrow,
-                        contentDescription = null
+                // Botón de Encendido / Cancelar
+                Button(
+                    onClick = if (isChecking) onStopPowerClick else onPowerClick,
+                    enabled = !isOnline,
+                    modifier = Modifier
+                        .weight(1.2f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isOnline) Color(0xFF4CAF50) else if (isChecking) MaterialTheme.colorScheme.error else Color.Black,
+                        contentColor = Color.White,
+                        disabledContainerColor = if (isOnline) Color(0xFF4CAF50) else Color.Gray,
+                        disabledContentColor = Color.White.copy(alpha = 0.7f)
+                    )
+                ) {
+                    if (isChecking) {
+                        Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(18.dp))
+                    } else {
+                        Icon(
+                            if (isOnline) Icons.Default.CheckCircle else Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        if (isOnline) "PRENDIDA" else if (isChecking) "CANCELAR" else "ENCENDER",
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 12.sp
                     )
                 }
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    if (isOnline) "PC PRENDIDA" else if (isChecking) "CANCELAR" else "ENCENDER",
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
 
-            if (!isChecking && !isOnline) {
-                Spacer(modifier = Modifier.height(8.dp))
+                // Botón de Comprobación Manual
                 OutlinedButton(
                     onClick = onOnlyPingClick,
+                    enabled = !isChecking,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .weight(0.8f)
                         .height(48.dp),
                     shape = RoundedCornerShape(12.dp),
                     border = androidx.compose.foundation.BorderStroke(1.dp, Color.Black),
@@ -319,9 +326,9 @@ fun DeviceCard(
                         contentColor = Color.Black
                     )
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("SOLO COMPROBAR PING", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("ESTADO", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                 }
             }
         }

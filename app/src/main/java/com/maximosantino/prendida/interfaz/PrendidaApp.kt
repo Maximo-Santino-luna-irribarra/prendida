@@ -1,5 +1,6 @@
 package com.maximosantino.prendida.interfaz
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.WindowCompat
 import androidx.compose.ui.unit.dp
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.maximosantino.prendida.R
 import com.maximosantino.prendida.data.PcDeviceEntity
 import com.maximosantino.prendida.data.PrendidaDatabase
 import com.maximosantino.prendida.network.NetworkUtils
@@ -70,6 +73,7 @@ fun PrendidaApp() {
     val deviceStatuses by viewModel.deviceStatuses.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.startService(context)
         viewModel.uiEvents.collect { message ->
             snackbarHostState.showSnackbar(
                 message = message,
@@ -122,18 +126,26 @@ fun PrendidaApp() {
                         .padding(16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Column {
-                        Text(
-                            text = "PRENDIDA",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo2),
+                            contentDescription = "Logo Prendida",
+                            modifier = Modifier.size(48.dp)
                         )
-                        Text(
-                            text = "Wake on LAN Utility",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                        )
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "PRENDIDA",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "Wake on LAN Utility",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            )
+                        }
                     }
                 }
 
@@ -187,16 +199,32 @@ fun PrendidaApp() {
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text(
-                            text = when (currentScreen) {
-                                PrendidaScreen.HOME -> "PRENDIDA"
-                                PrendidaScreen.ADD_DEVICE -> "AGREGAR PC"
-                                PrendidaScreen.EDIT_DEVICE -> "EDITAR EQUIPO"
-                                PrendidaScreen.HELP -> "AYUDA"
-                            },
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 2.sp
-                        )
+                        if (currentScreen == PrendidaScreen.HOME) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo2),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = "PRENDIDA",
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 2.sp
+                                )
+                            }
+                        } else {
+                            Text(
+                                text = when (currentScreen) {
+                                    PrendidaScreen.ADD_DEVICE -> "AGREGAR PC"
+                                    PrendidaScreen.EDIT_DEVICE -> "EDITAR EQUIPO"
+                                    PrendidaScreen.HELP -> "AYUDA"
+                                    else -> "PRENDIDA"
+                                },
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 2.sp
+                            )
+                        }
                     },
                     navigationIcon = {
                         IconButton(

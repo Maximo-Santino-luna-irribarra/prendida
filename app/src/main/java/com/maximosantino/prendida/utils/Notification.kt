@@ -13,6 +13,7 @@ import com.maximosantino.prendida.R
 
 object NotificationHelper {
 
+    const val SERVICE_NOTIFICATION_ID = 1001
     private const val CHANNEL_ID = "prendida_estado_pc"
     private const val CHANNEL_NAME = "Estado de la PC"
 
@@ -21,9 +22,9 @@ object NotificationHelper {
             val canal = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_LOW // Low priority for the persistent one
             ).apply {
-                description = "Notificaciones cuando la PC se enciende"
+                description = "Notificaciones de estado y monitoreo"
             }
 
             val notificationManager =
@@ -31,6 +32,16 @@ object NotificationHelper {
 
             notificationManager.createNotificationChannel(canal)
         }
+    }
+
+    fun getForegroundNotification(context: Context): android.app.Notification {
+        return NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Prendida está activo")
+            .setContentText("Monitoreando el estado de tus dispositivos")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .build()
     }
 
     fun notificarPcPrendida(context: Context, deviceName: String) {
