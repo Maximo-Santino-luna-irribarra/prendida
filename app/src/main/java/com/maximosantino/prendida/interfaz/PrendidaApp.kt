@@ -128,7 +128,7 @@ fun PrendidaApp() {
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.logo2),
+                            painter = painterResource(id = R.drawable.logo4),
                             contentDescription = "Logo Prendida",
                             modifier = Modifier.size(48.dp)
                         )
@@ -202,7 +202,7 @@ fun PrendidaApp() {
                         if (currentScreen == PrendidaScreen.HOME) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.logo2),
+                                    painter = painterResource(id = R.drawable.logo4),
                                     contentDescription = null,
                                     modifier = Modifier.size(28.dp)
                                 )

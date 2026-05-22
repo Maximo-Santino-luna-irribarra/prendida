@@ -2,23 +2,23 @@ package com.maximosantino.prendida.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Opción B: Paleta Violeta / Negro / Blanco (Contraste alto)
-val BackgroundBlack = Color(0xFF000000)
+// Paleta con el Rojo exacto solicitado (#D10F19)
+val BackgroundBlack = Color(0xFF121212) 
 val SurfaceWhite = Color(0xFFFFFFFF)
-val PrimaryViolet = Color(0xFFBB86FC)
-val PrimaryVariantViolet = Color(0xFF3700B3)
-val SecondaryViolet = Color(0xFFCFBCFF)
-val TextWhite = Color(0xFFFFFFFF)
-val TextBlack = Color(0xFF000000)
-val TextGreyDark = Color(0xFF444444)
-val TextGreyLight = Color(0xFFB0B0B0)
-val ErrorRed = Color(0xFFB00020)
-val SuccessGreen = Color(0xFF03DAC6)
+val PrimaryRed = Color(0xFFD10F19) // El rojo exacto del usuario
+val PrimaryVariantRed = Color(0xFF9B0B12) // Una variante más oscura para contraste
+val SecondaryRed = Color(0xFFE85D64) // Una variante más clara para acentos
+val TextWhite = Color(0xFFFAFAFA)
+val TextBlack = Color(0xFF121212)
+val TextGreyDark = Color(0xFF404040)
+val TextGreyLight = Color(0xFFA3A3A3)
+val ErrorRed = Color(0xFFD10F19)
+val SuccessGreen = Color(0xFF10B981)
 
-// Colores antiguos (mantener si es necesario para compatibilidad, pero usaremos los de arriba)
+// Colores antiguos (actualizados al nuevo rojo para mantener el tema)
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Purple40 = Color(0xFFD10F19) 
+val PurpleGrey40 = Color(0xFF404040)
+val Pink40 = Color(0xFF9B0B12)
