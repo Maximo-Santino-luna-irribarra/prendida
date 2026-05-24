@@ -16,4 +16,8 @@ object DeviceStatusManager {
     fun clearStatus(deviceId: Int) {
         _deviceStatuses.value = _deviceStatuses.value - deviceId
     }
+
+    fun clearAllStatuses() {
+        _deviceStatuses.value = emptyMap()
+    }
 }

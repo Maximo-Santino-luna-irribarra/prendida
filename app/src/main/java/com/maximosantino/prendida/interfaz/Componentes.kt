@@ -155,7 +155,7 @@ fun EmptyState(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo4),
+                painter = painterResource(id = R.drawable.logo_foreground),
                 contentDescription = null,
                 modifier = Modifier.size(80.dp)
             )

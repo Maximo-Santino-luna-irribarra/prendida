@@ -36,7 +36,7 @@ object NotificationHelper {
 
     fun getForegroundNotification(context: Context): android.app.Notification {
         return NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.logo_foreground)
             .setContentTitle("Prendida está activo")
             .setContentText("Monitoreando el estado de tus dispositivos")
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -57,7 +57,7 @@ object NotificationHelper {
         }
 
         val notificacion = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.logo_foreground)
             .setContentTitle("¡PC Encendida!")
             .setContentText("Tu equipo '$deviceName' ya está en línea.")
             .setPriority(NotificationCompat.PRIORITY_HIGH) // Aumentamos la prioridad para que sea más visible

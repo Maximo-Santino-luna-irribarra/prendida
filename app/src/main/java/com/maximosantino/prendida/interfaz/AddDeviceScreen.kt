@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.maximosantino.prendida.data.PcDeviceEntity
+import com.maximosantino.prendida.network.NetworkUtils
 import com.maximosantino.prendida.ui.theme.TextGreyLight
 
 @Composable
@@ -25,14 +26,20 @@ fun AddDeviceScreen(
     var name by remember { mutableStateOf(deviceToEdit?.name ?: "") }
     var macAddress by remember { mutableStateOf(deviceToEdit?.macAddress ?: "") }
     var deviceIp by remember { mutableStateOf(deviceToEdit?.deviceIp ?: "") }
-    var broadcastIp by remember { mutableStateOf(deviceToEdit?.broadcastIp ?: "") }
+    var subnetMask by remember { 
+        mutableStateOf(
+            if (deviceToEdit != null) 
+                NetworkUtils.inferSubnetMask(deviceToEdit.deviceIp, deviceToEdit.broadcastIp) 
+            else "255.255.255.0"
+        ) 
+    }
     var port by remember { mutableStateOf(deviceToEdit?.port?.toString() ?: "9") }
 
     // Estados de error
     var nameError by remember { mutableStateOf<String?>(null) }
     var macError by remember { mutableStateOf<String?>(null) }
     var ipError by remember { mutableStateOf<String?>(null) }
-    var broadcastError by remember { mutableStateOf<String?>(null) }
+    var maskError by remember { mutableStateOf<String?>(null) }
     var portError by remember { mutableStateOf<String?>(null) }
 
     val scrollState = rememberScrollState()
@@ -76,15 +83,15 @@ fun AddDeviceScreen(
             ipError = null
         }
 
-        // Validar Broadcast
-        if (broadcastIp.isBlank()) {
-            broadcastError = "El broadcast no puede estar vacío"
+        // Validar Máscara
+        if (subnetMask.isBlank()) {
+            maskError = "La máscara no puede estar vacía"
             isValid = false
-        } else if (!ipRegex.matches(broadcastIp)) {
-            broadcastError = "Broadcast inválido. Ejemplo: 192.168.1.255"
+        } else if (!ipRegex.matches(subnetMask)) {
+            maskError = "Máscara inválida. Ejemplo: 255.255.255.0"
             isValid = false
         } else {
-            broadcastError = null
+            maskError = null
         }
 
         // Validar Puerto
@@ -148,13 +155,13 @@ fun AddDeviceScreen(
         )
 
         PrendidaTextField(
-            value = broadcastIp,
-            onValueChange = { broadcastIp = it },
-            label = "Dirección Broadcast",
-            placeholder = "Ej: 192.168.1.255",
-            helperText = "Usada para enviar el paquete a toda la red",
-            isError = broadcastError != null,
-            errorMessage = broadcastError,
+            value = subnetMask,
+            onValueChange = { subnetMask = it },
+            label = "Máscara de Red",
+            placeholder = "Ej: 255.255.255.0",
+            helperText = "Usada para calcular el broadcast automáticamente",
+            isError = maskError != null,
+            errorMessage = maskError,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             leadingIcon = Icons.Default.Share
         )
@@ -177,11 +184,13 @@ fun AddDeviceScreen(
             text = if (deviceToEdit == null) "GUARDAR EQUIPO" else "ACTUALIZAR DATOS",
             onClick = {
                 if (validateForm()) {
+                    val calculatedBroadcast = NetworkUtils.calculateBroadcastAddress(deviceIp, subnetMask) ?: "255.255.255.255"
+                    
                     if (deviceToEdit == null) {
                         onSaveDevice(
                             name,
                             macAddress.uppercase().trim(),
-                            broadcastIp.trim(),
+                            calculatedBroadcast,
                             deviceIp.trim(),
                             port.toInt()
                         )
@@ -190,7 +199,7 @@ fun AddDeviceScreen(
                             deviceToEdit.id,
                             name,
                             macAddress.uppercase().trim(),
-                            broadcastIp.trim(),
+                            calculatedBroadcast,
                             deviceIp.trim(),
                             port.toInt()
                         )

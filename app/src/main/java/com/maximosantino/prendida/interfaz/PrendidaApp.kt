@@ -15,7 +15,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.core.view.WindowCompat
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -128,7 +127,7 @@ fun PrendidaApp() {
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.logo4),
+                            painter = painterResource(id = R.drawable.logo_foreground),
                             contentDescription = "Logo Prendida",
                             modifier = Modifier.size(48.dp)
                         )
@@ -202,7 +201,7 @@ fun PrendidaApp() {
                         if (currentScreen == PrendidaScreen.HOME) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.logo4),
+                                    painter = painterResource(id = R.drawable.logo_foreground),
                                     contentDescription = null,
                                     modifier = Modifier.size(28.dp)
                                 )
